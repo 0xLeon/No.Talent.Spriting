@@ -1,0 +1,3 @@
+These scripts can create low tier sprites from normal sprites. You don't need any talent. 
+You just need a folder with scripts placed in, a subfolder named sprites, which contains 
+the sprinted in PNG format and PHP. Call the scripts from CLI and follow the instructions.
