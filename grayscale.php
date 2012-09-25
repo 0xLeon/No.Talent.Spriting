@@ -11,6 +11,9 @@ if (strtolower(php_sapi_name()) != 'cli') die('Script has to be invoked from cli
 
 $pokemans = glob('./sprites/*.png');
 $mode = 4;
+$grayscaleFunction = function($color) {
+	return grayscaleLuminosityHDTV($color);
+};
 
 if (!is_dir('./grayscale')) mkdir('./grayscale');
 
@@ -30,15 +33,29 @@ else {
 }
 
 if (($mode > 0) && ($mode < 5)) {
-	$mode = pow(2, $mode - 1);
+	switch ($mode) {
+		case 1:
+			$grayscaleFunction = function($color) {
+				return grayscaleLightness($color);
+			};
+		break;
+		case 2:
+			$grayscaleFunction = function($color) {
+				return grayscaleAverage($color);
+			};
+		break;
+		case 3:
+			$grayscaleFunction = function($color) {
+				return grayscaleLuminosityNTSC($color);
+			};
+		break;
+	}
 }
 else {
 	echo 'Invalid grayscaling mode, will use luminosity HDTV'."\n";
-	$mode = 8;
 }
 
-define('GRAYSCALE_MODE', $mode);
-unset($mode);
+
 
 foreach ($pokemans as $pokeman) {
 	$image = imagecreatefrompng($pokeman);
@@ -55,7 +72,7 @@ foreach ($pokemans as $pokeman) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
 			if ($color['alpha'] < 127) {
-				$gray = grayscale($color);
+				$gray = $grayscaleFunction($color);
 				
 				if (!isset($colors[$gray])) {
 					$colors[$gray] = imagecolorallocatealpha($newImage, $gray, $gray, $gray, 0x00);
@@ -69,20 +86,6 @@ foreach ($pokemans as $pokeman) {
 	imagepng($newImage, str_replace('./sprites/', './grayscale/', $pokeman), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
-}
-
-function grayscale($color) {
-	switch (GRAYSCALE_MODE) {
-		case 1:
-			return grayscaleLightness($color);
-		case 2:
-			return grayscaleAverage($color);
-		case 4:
-			return grayscaleLuminosityNTSC($color);
-		case 8:
-		default:
-			return grayscaleLuminosityHDTV($color);
-	}
 }
 
 function grayscaleLightness($color) {
