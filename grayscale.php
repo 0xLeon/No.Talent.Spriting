@@ -91,17 +91,17 @@ foreach ($pokemans as $pokeman) {
 }
 
 function grayscaleLightness($color) {
-	return intval(round((min($color) + max($color)) / 2));
+	return intval(floor((min($color) + max($color)) / 2));
 }
 
 function grayscaleAverage($color) {
-	return intval(round(($color['red'] + $color['green'] + $color['blue']) / 3));
+	return intval(floor(($color['red'] + $color['green'] + $color['blue']) / 3));
 }
 
 function grayscaleLuminosityNTSC($color) {
-	return intval(round(0.299 * $color['red'] + 0.587 * $color['green'] + 0.114 * $color['blue']));
+	return intval(floor(0.299 * $color['red'] + 0.587 * $color['green'] + 0.114 * $color['blue']));
 }
 
 function grayscaleLuminosityHDTV($color) {
-	return intval(round(0.2126 * $color['red'] + 0.7152 * $color['green'] + 0.0722 * $color['blue']));
+	return intval(floor(0.2126 * $color['red'] + 0.7152 * $color['green'] + 0.0722 * $color['blue']));
 }
