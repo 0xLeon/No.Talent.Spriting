@@ -7,7 +7,7 @@
  * @copyright	2011-2012 Stefan Hahn
  * @license	Simplified BSD License License <http://projects.swallow-all-lies.com/licenses/simplified-bsd-license.txt>
  */
-if (strtolower(php_sapi_name()) != 'cli') die('Script has to be invoked from cli');
+require_once('./lib.php');
 
 $pokemans = glob('./sprites/*.png');
 
@@ -44,9 +44,4 @@ foreach ($pokemans as $pokeman) {
 	imagepng($newImage, str_replace('./sprites/', './3d/', $pokeman), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
-}
-
-function ownDecHex($number) {
-	if ($number < 0x10) return '0'.dechex($number);
-	else return dechex($number);
 }

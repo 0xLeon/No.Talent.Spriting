@@ -7,7 +7,7 @@
  * @copyright	2011-2012 Stefan Hahn
  * @license	Simplified BSD License License <http://projects.swallow-all-lies.com/licenses/simplified-bsd-license.txt>
  */
-if (strtolower(php_sapi_name()) != 'cli') die('Script has to be invoked from cli');
+require_once('./lib.php');
 
 $pokemans = glob('./sprites/*.png');
 
@@ -17,10 +17,10 @@ if ($argc === 1) {
 	echo 'Enter hexadecimal color for monocolor pokemons and press enter!'."\n";
 	echo '> ';
 
-	$newColor = hex2RGB(fread(STDIN, 7));
+	$newColor = hex2color(fread(STDIN, 7));
 }
 else {
-	$newColor = hex2RGB($argv[1]);
+	$newColor = hex2color($argv[1]);
 }
 
 if (!$newColor) {
@@ -57,34 +57,4 @@ foreach ($pokemans as $pokeman) {
 	imagepng($newImage, str_replace('./sprites/', './monocolor/', $pokeman), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
-}
-
-/**
- * Convert a hexa decimal color code to its RGB equivalent
- *
- * @param string $hexStr (hexadecimal color value)
- * @param boolean $returnAsString (if set true, returns the value separated by the separator character. Otherwise returns associative array)
- * @param string $seperator (to separate RGB values. Applicable only if second parameter is true.)
- * @return array or string (depending on second parameter. Returns False if invalid hex color value)
- */                                                                                                
-function hex2RGB($hexStr, $returnAsString = false, $seperator = ',') {
-	$hexStr = preg_replace('/[^0-9A-Fa-f]/', '', $hexStr);
-	$rgbArray = array();
-	
-	if (strlen($hexStr) == 6) {
-		$colorVal = hexdec($hexStr);
-		$rgbArray['red'] = 0xFF & ($colorVal >> 0x10);
-		$rgbArray['green'] = 0xFF & ($colorVal >> 0x8);
-		$rgbArray['blue'] = 0xFF & $colorVal;
-	}
-	elseif (strlen($hexStr) == 3) {
-		$rgbArray['red'] = hexdec(str_repeat(substr($hexStr, 0, 1), 2));
-		$rgbArray['green'] = hexdec(str_repeat(substr($hexStr, 1, 1), 2));
-		$rgbArray['blue'] = hexdec(str_repeat(substr($hexStr, 2, 1), 2));
-	}
-	else {
-		return false;
-	}
-	
-	return $returnAsString ? implode($seperator, $rgbArray) : $rgbArray;
 }
