@@ -35,8 +35,9 @@ if (!$newColor) {
 
 foreach ($pokemans as $pokeman) {
 	$image = imagecreatefrompng($pokeman);
-	$newImage = imagecreatetruecolor(80, 80);
+	$imageInfo = getImageInfo($image);
 	
+	$newImage = imagecreatetruecolor($imageInfo['width'], $imageInfo['height']);
 	$newColorIndex = imagecolorallocatealpha($newImage, $newColor['red'], $newColor['green'], $newColor['blue'], 0x00);
 	
 	echo 'Turning pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman)).' to monocolor'."\n";
@@ -44,8 +45,8 @@ foreach ($pokemans as $pokeman) {
 	imagesavealpha($newImage, true);
 	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
 	
-	for ($y = 0; $y < 80; $y++) {
-		for ($x = 0; $x < 80; $x++) {
+	for ($y = 0; $y < $$imageInfo['height']; $y++) {
+		for ($x = 0; $x < $imageInfo['width']; $x++) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
 			if ($color['alpha'] < 127) {

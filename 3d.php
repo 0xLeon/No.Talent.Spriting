@@ -15,7 +15,9 @@ if (!is_dir('./3d')) mkdir('./3d');
 
 foreach ($pokemans as $pokeman) {
 	$image = imagecreatefrompng($pokeman);
-	$newImage = imagecreatetruecolor(90, 80);
+	$imageInfo = getImageInfo($image);
+	
+	$newImage = imagecreatetruecolor($imageInfo['width'] + 10, $imageInfo['height']);
 	$colors = array();
 	
 	echo 'Turning pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman)).' to 3d'."\n";
@@ -24,8 +26,8 @@ foreach ($pokemans as $pokeman) {
 	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
 	
 	for ($i = 0; $i < 7; $i++) {
-		for ($y = 0; $y < 80; $y++) {
-			for ($x = 0; $x < 80; $x++) {
+		for ($y = 0; $y < $imageInfo['height']; $y++) {
+			for ($x = 0; $x < $imageInfo['width']; $x++) {
 				$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 				
 				if ($color['alpha'] < 127) {
