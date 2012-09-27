@@ -45,7 +45,7 @@ foreach ($pokemans as $pokeman) {
 	imagesavealpha($newImage, true);
 	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
 	
-	for ($y = 0; $y < $$imageInfo['height']; $y++) {
+	for ($y = 0; $y < $imageInfo['height']; $y++) {
 		for ($x = 0; $x < $imageInfo['width']; $x++) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
