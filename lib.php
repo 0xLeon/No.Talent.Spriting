@@ -29,3 +29,21 @@ function hex2color($hexStr, $returnAsString = false, $seperator = ',') {
 	
 	return $returnAsString ? implode($seperator, $rgbArray) : $rgbArray;
 }
+
+function getImageInfo(&$image) {
+	$imageInfo = array(
+		'width' => imagesx($image),
+		'height' => imagesy($image),
+		'colorGrid' => array()
+	);
+	
+	for ($x = 0; $x < $imageInfo['width']; $x++) {
+		$imageInfo['colorGrid'][$x] = array();
+		
+		for ($y = 0; $y < $imageInfo['height']; $y++) {
+			$imageInfo['colorGrid'][$x][$y] = imagecolorsforindex($image, imagecolorat($image, $x, $y));
+		}
+	}
+	
+	return $imageInfo;
+}
