@@ -9,7 +9,7 @@
  */
 require_once('./lib.php');
 
-$pokemans = glob('./sprites/*.png');
+$sprites = glob('./sprites/*.png');
 
 if (!is_dir('./outline')) mkdir('./outline');
 
@@ -33,36 +33,36 @@ if (!$newColor) {
 	);
 }
 
-foreach ($pokemans as $pokeman) {
-	$image = imagecreatefrompng($pokeman);
+foreach ($sprites as $sprite) {
+	$image = imagecreatefrompng($sprite);
 	$imageInfo = getImageInfo($image);
 	
 	$newImage = imagecreatetruecolor($imageInfo['width'], $imageInfo['height']);
 	$newColorIndex = imagecolorallocatealpha($newImage, $newColor['red'], $newColor['green'], $newColor['blue'], 0x00);
 	
-	echo 'Turning pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman)).' to outline'."\n";
+	echo 'Turning sprite '.basename($sprite, '.png').' to outline'."\n";
 	imagealphablending($newImage, false);
 	imagesavealpha($newImage, true);
-	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
+	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xFF, 0xFF, 0xFF, 0x7F));
 	
 	for ($y = 0; $y < $imageInfo['height']; $y++) {
 		for ($x = 0; $x < $imageInfo['width']; $x++) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
-			if ($color['alpha'] < 0x7f) {
+			if ($color['alpha'] < 0x7F) {
 				$colorTop = @imagecolorsforindex($image, imagecolorat($image, $x, ((($y-1) > -1) ? ($y-1) : $y)));
 				$colorBottom = @imagecolorsforindex($image, imagecolorat($image, $x, ((($y+1) < 80) ? ($y+1) : $y)));
 				$colorLeft = @imagecolorsforindex($image, imagecolorat($image, ((($x-1) > -1) ? ($x-1) : $x), $y));
 				$colorRight = @imagecolorsforindex($image, imagecolorat($image, ((($x+1) < 80) ? ($x+1) : $x), $y));
 				
-				if (($colorTop['alpha'] === 0x7f) || ($colorBottom['alpha'] === 0x7f) || ($colorLeft['alpha'] === 0x7f) || ($colorRight['alpha'] === 0x7f) || (($colorTop['alpha'] < 0x7f) && (($y-1) < 0)) || (($colorLeft['alpha'] < 0x7f) && (($x-1) < 0)) || (($colorBottom['alpha'] < 0x7f) && (($y+1) > 79)) || (($colorRight['alpha'] < 0x7f) && (($x+1) > 79))) {
+				if (($colorTop['alpha'] === 0x7F) || ($colorBottom['alpha'] === 0x7F) || ($colorLeft['alpha'] === 0x7F) || ($colorRight['alpha'] === 0x7F) || (($colorTop['alpha'] < 0x7F) && (($y - 1) < 0)) || (($colorLeft['alpha'] < 0x7F) && (($x - 1) < 0)) || (($colorBottom['alpha'] < 0x7F) && (($y + 1) > 79)) || (($colorRight['alpha'] < 0x7F) && (($x + 1) > 79))) {
 					imagesetpixel($newImage, $x, $y, $newColorIndex);
 				}
 			}
 		}
 	}
 	
-	imagepng($newImage, str_replace('./sprites/', './outline/', $pokeman), 9);
+	imagepng($newImage, './outline/'.basename($sprite), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
 }

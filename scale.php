@@ -9,7 +9,7 @@
  */
 require_once('./lib.php');
 
-$pokemans = glob('./sprites/*.png');
+$sprites = glob('./sprites/*.png');
 $mode = 0;
 $scaleFunction = function(&$image, &$newImage) {
 	return scaleNearestNeighbor($image, $newImage);
@@ -57,19 +57,19 @@ switch ($mode) {
 	break;
 }
 
-foreach ($pokemans as $pokeman) {
-	$image = imagecreatefrompng($pokeman);
+foreach ($sprites as $sprite) {
+	$image = imagecreatefrompng($sprite);
 	$newImage = imagecreatetruecolor(imagesx($image) * 4, imagesy($image) * 4);
 	
-	echo 'Scaling pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman))."\n";
+	echo 'Scaling sprite '.basename($sprite, '.png')."\n";
 	
 	imagealphablending($newImage, false);
 	imagesavealpha($newImage, true);
-	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
+	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xFF, 0xFF, 0xFF, 0x7F));
 	
 	$scaleFunction($image, $newImage);
 	
-	imagepng($newImage, str_replace('./sprites/', './scale/', $pokeman), 9);
+	imagepng($newImage, './scale/'.basename($sprite), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
 }

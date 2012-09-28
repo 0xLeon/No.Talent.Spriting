@@ -9,7 +9,7 @@
  */
 require_once('./lib.php');
 
-$pokemans = glob('./sprites/*.png');
+$sprites = glob('./sprites/*.png');
 $mode = 4;
 $grayscaleFunction = function($color) {
 	return grayscaleLuminosityHDTV($color);
@@ -57,23 +57,23 @@ else {
 
 
 
-foreach ($pokemans as $pokeman) {
-	$image = imagecreatefrompng($pokeman);
+foreach ($sprites as $sprite) {
+	$image = imagecreatefrompng($sprite);
 	$imageInfo = getImageInfo($image);
 	
 	$newImage = imagecreatetruecolor($imageInfo['width'], $imageInfo['height']);
 	$colors = array();
 	
-	echo 'Turning pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman)).' to grayscale'."\n";
+	echo 'Grayscaling sprite '.basename($sprite, '.png')."\n";
 	imagealphablending($newImage, false);
 	imagesavealpha($newImage, true);
-	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
+	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xFF, 0xFF, 0xFF, 0x7F));
 	
 	for ($y = 0; $y < $imageInfo['height']; $y++) {
 		for ($x = 0; $x < $imageInfo['width']; $x++) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
-			if ($color['alpha'] < 127) {
+			if ($color['alpha'] < 0x7F) {
 				$gray = $grayscaleFunction($color);
 				
 				if (!isset($colors[$gray])) {
@@ -85,7 +85,7 @@ foreach ($pokemans as $pokeman) {
 		}
 	}
 	
-	imagepng($newImage, str_replace('./sprites/', './grayscale/', $pokeman), 9);
+	imagepng($newImage, './grayscale/'.basename($sprite), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
 }

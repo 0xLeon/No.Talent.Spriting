@@ -9,7 +9,7 @@
  */
 require_once('./lib.php');
 
-$pokemans = glob('./sprites/*.png');
+$sprites = glob('./sprites/*.png');
 $factor = 7;
 
 if (!is_dir('./3d')) mkdir('./3d');
@@ -31,23 +31,23 @@ if (($factor < 1) || ($factor > 99)) {
 	$factor = 7;
 }
 
-foreach ($pokemans as $pokeman) {
-	$image = imagecreatefrompng($pokeman);
+foreach ($sprites as $sprite) {
+	$image = imagecreatefrompng($sprite);
 	$imageInfo = getImageInfo($image);
 	
 	$newImage = imagecreatetruecolor($imageInfo['width'] + $factor, $imageInfo['height']);
 	$colors = array();
 	
-	echo 'Turning pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman)).' to 3d'."\n";
+	echo 'Turning sprite '.basename($sprite, '.png').' to 3d'."\n";
 	imagealphablending($newImage, false);
 	imagesavealpha($newImage, true);
-	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
+	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xFF, 0xFF, 0xFF, 0x7F));
 	
 	for ($y = 0; $y < $imageInfo['height']; $y++) {
 		for ($x = $imageInfo['width'] - 1; $x > -1; $x--) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
-			if ($color['alpha'] < 127) {
+			if ($color['alpha'] < 0x7F) {
 				$hex = ownDecHex($color['red']).ownDecHex($color['green']).ownDecHex($color['blue']);
 				
 				if (!isset($colors[$hex])) {
@@ -59,7 +59,7 @@ foreach ($pokemans as $pokeman) {
 		}
 	}
 	
-	imagepng($newImage, str_replace('./sprites/', './3d/', $pokeman), 9);
+	imagepng($newImage, './3d/'.basename($sprite), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
 }

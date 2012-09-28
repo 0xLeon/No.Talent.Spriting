@@ -9,31 +9,31 @@
  */
 require_once('./lib.php');
 
-$pokemans = glob('./sprites/*.png');
+$sprites = glob('./sprites/*.png');
 
 if (!is_dir('./negative')) mkdir('./negative');
 
-foreach ($pokemans as $pokeman) {
-	$image = imagecreatefrompng($pokeman);
+foreach ($sprites as $sprite) {
+	$image = imagecreatefrompng($sprite);
 	$imageInfo = getImageInfo($image);
 	
 	$newImage = imagecreatetruecolor($imageInfo['width'], $imageInfo['height']);
 	$colors = array();
 	
-	echo 'Turning pokemon '.str_replace('./', '', str_replace('.png', '', $pokeman)).' to negative'."\n";
+	echo 'Turning sprite '.basename($sprite, '.png').' to negative'."\n";
 	imagealphablending($newImage, false);
 	imagesavealpha($newImage, true);
-	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xff, 0xff, 0xff, 0x7f));
+	imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0xFF, 0xFF, 0xFF, 0x7F));
 	
 	for ($y = 0; $y < $imageInfo['height']; $y++) {
 		for ($x = 0; $x < $imageInfo['width']; $x++) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
-			if ($color['alpha'] < 127) {
+			if ($color['alpha'] < 0x7F) {
 				$hex = ownDecHex($color['red']).ownDecHex($color['green']).ownDecHex($color['blue']);
 				
 				if (!isset($colors[$hex])) {
-					$colors[$hex] = imagecolorallocatealpha($newImage, 0xff - $color['red'], 0xff - $color['green'], 0xff - $color['blue'], 0x00);
+					$colors[$hex] = imagecolorallocatealpha($newImage, 0xFF - $color['red'], 0xFF - $color['green'], 0xFF - $color['blue'], 0x00);
 				}
 				
 				imagesetpixel($newImage, $x, $y, $colors[$hex]);
@@ -41,7 +41,7 @@ foreach ($pokemans as $pokeman) {
 		}
 	}
 	
-	imagepng($newImage, str_replace('./sprites/', './negative/', $pokeman), 9);
+	imagepng($newImage, './negative/'.basename($sprite), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
 }
