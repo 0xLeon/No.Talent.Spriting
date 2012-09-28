@@ -50,12 +50,12 @@ foreach ($sprites as $sprite) {
 			$color = imagecolorsforindex($image, imagecolorat($image, $x, $y));
 			
 			if ($color['alpha'] < 0x7F) {
-				$colorTop = @imagecolorsforindex($image, imagecolorat($image, $x, ((($y-1) > -1) ? ($y-1) : $y)));
-				$colorBottom = @imagecolorsforindex($image, imagecolorat($image, $x, ((($y+1) < $imageInfo['height']) ? ($y+1) : $y)));
-				$colorLeft = @imagecolorsforindex($image, imagecolorat($image, ((($x-1) > -1) ? ($x-1) : $x), $y));
-				$colorRight = @imagecolorsforindex($image, imagecolorat($image, ((($x+1) < $imageInfo['width']) ? ($x+1) : $x), $y));
+				$colorTop = @imagecolorsforindex($image, imagecolorat($image, $x, (($y > 0) ? ($y - 1) : $y)));
+				$colorBottom = @imagecolorsforindex($image, imagecolorat($image, $x, ((($y + 1) < $imageInfo['height']) ? ($y + 1) : $y)));
+				$colorLeft = @imagecolorsforindex($image, imagecolorat($image, (($x > 0) ? ($x - 1) : $x), $y));
+				$colorRight = @imagecolorsforindex($image, imagecolorat($image, ((($x + 1) < $imageInfo['width']) ? ($x + 1) : $x), $y));
 				
-				if (($colorTop['alpha'] === 0x7F) || ($colorBottom['alpha'] === 0x7F) || ($colorLeft['alpha'] === 0x7F) || ($colorRight['alpha'] === 0x7F) || (($colorTop['alpha'] < 0x7F) && (($y - 1) < 0)) || (($colorLeft['alpha'] < 0x7F) && (($x - 1) < 0)) || (($colorBottom['alpha'] < 0x7F) && (($y + 1) > ($imageInfo['height'] - 1))) || (($colorRight['alpha'] < 0x7F) && (($x + 1) > ($imageInfo['width'] - 1)))) {
+				if (($colorTop['alpha'] === 0x7F) || ($colorBottom['alpha'] === 0x7F) || ($colorLeft['alpha'] === 0x7F) || ($colorRight['alpha'] === 0x7F) || (($colorTop['alpha'] < 0x7F) && ($y < 1)) || (($colorLeft['alpha'] < 0x7F) && ($x < 1)) || (($colorBottom['alpha'] < 0x7F) && ($y > ($imageInfo['height'] - 2))) || (($colorRight['alpha'] < 0x7F) && ($x > ($imageInfo['width'] - 2)))) {
 					imagesetpixel($newImage, $x, $y, $newColorIndex);
 				}
 			}
