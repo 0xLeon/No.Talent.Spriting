@@ -11,6 +11,7 @@ require_once('./lib.php');
 
 $sprites = glob('./sprites/*.png');
 $mode = 0;
+$pathPrefix = 'nearestNeighbor';
 $scaleFunction = function(&$image, &$newImage) {
 	return scaleNearestNeighbor($image, $newImage);
 };
@@ -41,21 +42,26 @@ switch ($mode) {
 		$scaleFunction = function(&$image, &$newImage) {
 			return scaleScale4x($image, $newImage);
 		};
+		$pathPrefix = 'scale4x';
 	break;
 	case 3:
 		$scaleFunction = function(&$image, &$newImage) {
 			return scale4xSaI($image, $newImage);
 		};
+		$pathPrefix = '4xsai';
 	break;
 	case 4:
 		$scaleFunction = function(&$image, &$newImage) {
 			return scaleHq4x($image, $newImage);
 		};
+		$pathPrefix = 'hq4x';
 	break;
 	default:
 		echo 'Invalid scaling mode, will use Nearest Neighbor'."\n";
 	break;
 }
+
+if (!is_dir('./scale/'.$pathPrefix)) mkdir('./scale/'.$pathPrefix);
 
 foreach ($sprites as $sprite) {
 	$image = imagecreatefrompng($sprite);
@@ -69,7 +75,7 @@ foreach ($sprites as $sprite) {
 	
 	$scaleFunction($image, $newImage);
 	
-	imagepng($newImage, './scale/'.basename($sprite), 9);
+	imagepng($newImage, './scale/'.$pathPrefix.'/'.basename($sprite), 9);
 	imagedestroy($image);
 	imagedestroy($newImage);
 }
