@@ -96,7 +96,63 @@ function scaleNearestNeighbor(&$image, &$newImage) {
 }
 
 function scaleScale4x(&$image, &$newImage) {
+	$tmpImage = imagecreatetruecolor(imagesx($image) * 2, imagesy($image) * 2);
 	
+	imagealphablending($tmpImage, false);
+	imagesavealpha($tmpImage, true);
+	imagefill($tmpImage, 0, 0, imagecolorallocatealpha($tmpImage, 0xFF, 0xFF, 0xFF, 0x7F));
+	
+	scaleScale2x($image, $tmpImage);
+	scaleScale2x($tmpImage, $newImage);
+	imagedestroy($tmpImage);
+}
+
+function scaleScale2x(&$image, &$newImage) {
+	$imageInfo = getImageInfo($image);
+	$imageColorGrid = getColorGrid($image, PX_ARGB);
+	$colors = array();
+	
+	for ($y = 0; $y < $imageInfo['height']; $y++) {
+		for ($x = 0; $x < $imageInfo['width']; $x++) {
+			$scaledPixel = array($imageColorGrid[$y][$x], $imageColorGrid[$y][$x], $imageColorGrid[$y][$x], $imageColorGrid[$y][$x]);
+			$a = $imageColorGrid[(($y === 0) ? $y : ($y - 1))][$x];
+			$b = $imageColorGrid[$y][(($x === ($imageInfo['width'] - 1)) ? $x : ($x + 1))];
+			$c = $imageColorGrid[$y][(($x === 0) ? $x : ($x - 1))];
+			$d = $imageColorGrid[(($y === ($imageInfo['height'] - 1)) ? $y : ($y + 1))][$x];
+			
+			if (($c === $a) && ($c !== $d) && ($a !== $b)) {
+				$scaledPixel[0] = $a;
+			}
+			if (!isset($colors[$scaledPixel[0]])) {
+				$colors[$scaledPixel[0]] = imagecolorallocatealpha($newImage, ($scaledPixel[0] & 0x00FF0000) >> 16, ($scaledPixel[0] & 0x0000FF00) >> 8, $scaledPixel[0] & 0x000000FF, ($scaledPixel[0] & 0xFF000000) >> 24);
+			}
+			imagesetpixel($newImage, $x * 2, $y * 2, $colors[$scaledPixel[0]]);
+			
+			if (($a === $b) && ($a !== $c) && ($d !== $b)) {
+				$scaledPixel[1] = $b;
+			}
+			if (!isset($colors[$scaledPixel[1]])) {
+				$colors[$scaledPixel[1]] = imagecolorallocatealpha($newImage, ($scaledPixel[1] & 0x00FF0000) >> 16, ($scaledPixel[1] & 0x0000FF00) >> 8, $scaledPixel[1] & 0x000000FF, ($scaledPixel[1] & 0xFF000000) >> 24);
+			}
+			imagesetpixel($newImage, $x * 2 + 1, $y * 2, $colors[$scaledPixel[1]]);
+			
+			if (($d === $c) && ($d !== $b) && ($c !== $a)) {
+				$scaledPixel[2] = $c;
+			}
+			if (!isset($colors[$scaledPixel[2]])) {
+				$colors[$scaledPixel[2]] = imagecolorallocatealpha($newImage, ($scaledPixel[2] & 0x00FF0000) >> 16, ($scaledPixel[2] & 0x0000FF00) >> 8, $scaledPixel[2] & 0x000000FF, ($scaledPixel[2] & 0xFF000000) >> 24);
+			}
+			imagesetpixel($newImage, $x * 2, $y * 2 + 1, $colors[$scaledPixel[2]]);
+			
+			if (($b === $d) && ($b !== $a) && ($d !== $c)) {
+				$scaledPixel[3] = $d;
+			}
+			if (!isset($colors[$scaledPixel[3]])) {
+				$colors[$scaledPixel[3]] = imagecolorallocatealpha($newImage, ($scaledPixel[3] & 0x00FF0000) >> 16, ($scaledPixel[3] & 0x0000FF00) >> 8, $scaledPixel[3] & 0x000000FF, ($scaledPixel[3] & 0xFF000000) >> 24);
+			}
+			imagesetpixel($newImage, $x * 2 + 1, $y * 2 + 1, $colors[$scaledPixel[3]]);
+		}
+	}
 }
 
 function scale4xSaI(&$image, &$newImage) {
